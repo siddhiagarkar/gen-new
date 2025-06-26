@@ -1,0 +1,17 @@
+/* Layer 1: Tailwind Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Layer 2: Manual Pastel Classes */
+.bg-pastel-pink { background-color: #FFD1DC !important; }
+.bg-pastel-blue { background-color: #A7C7E7 !important; }
+.bg-pastel-green { background-color: #C1E1C1 !important; }
+.bg-pastel-purple { background-color: #C3B1E1 !important; }
+.bg-pastel-yellow { background-color: #FDFD96 !important; }
+.bg-pastel-cyan { background-color: #B2EBF2 !important; }
+
+/* Layer 3: Force borders */
+.border-pastel-pink { border-color: #FFB6C1 !important; }
+.border-pastel-blue { border-color: #87CEEB !important; }
+/* Add other borders as needed */
