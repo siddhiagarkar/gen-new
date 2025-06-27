@@ -4,4 +4,4 @@ export default function TailwindTest() {
       If this is red, Tailwind is working
     </div>
   );
-}
+};
