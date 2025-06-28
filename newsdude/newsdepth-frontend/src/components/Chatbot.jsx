@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const Chatbot = ({ headline, onRefresh }) => {
   const [messages, setMessages] = useState([
     { 
-      text: headline?.title || "news discussion", 
+      text: headline?.description, 
       from: 'bot',
       isTitle: true  // Special flag for the title message
     },

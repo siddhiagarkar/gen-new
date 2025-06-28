@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Dashboard from '../components/Dashboard';
 
+
 const Home = () => {
   const [headlines, setHeadlines] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,12 +13,12 @@ const Home = () => {
       setLoading(true);
       setError(null);
       
-      const API_KEY = '36cf9bdd661c48f39136e2029c3b7f9a';
+      const API_KEY = process.env.REACT_APP_NEWS_API_KEY;
       const response = await axios.get(
         `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`
       );
       
-      setHeadlines(response.data.articles.slice(0, 6)); // Get first 6 articles
+      setHeadlines(response.data.articles.slice(0, 10)); // Get first 10 articles
       // setHeadlines(response.data.articles);
     } catch (err) {
       setError('Failed to load news. Please try again later.');
