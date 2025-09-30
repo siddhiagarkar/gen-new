@@ -1,30 +1,35 @@
-import React from 'react';
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Chatbot from '../components/Chatbot';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 const Chat = () => {
   const [headlines, setHeadlines] = useState([]);
-  const { headlineIndex } = useParams();
-  console.log("headline idx = " , headlineIndex);  
-  console.log("API Key:", process.env.REACT_APP_NEWS_API_KEY);
-  console.log('URL param headlineIndex:', headlineIndex); // Should show a number
-  console.log('Current headlines:', headlines); // Should show array with articles
+  const { articleId } = useParams(); // Changed from headlineIndex to articleId
+  const location = useLocation();
+  const [selectedHeadline, setSelectedHeadline] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Function to decode article ID
+  const decodeArticleId = (id) => {
+    try {
+      return atob(id); // Decode from base64
+    } catch (error) {
+      console.error('Error decoding article ID:', error);
+      return null;
+    }
+  };
 
   const fetchHeadlines = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const API_KEY = process.env.REACT_APP_NEWS_API_KEY
+      const API_KEY = process.env.REACT_APP_NEWS_API_KEY;
       const response = await axios.get(
         `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`
       );
-
 
       setHeadlines(response.data.articles);
     } catch (err) {
@@ -35,27 +40,71 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => { fetchHeadlines(); }, []);
+  useEffect(() => { 
+    fetchHeadlines(); 
+  }, []);
 
-  if (loading) 
-    // console.log('Loading the headline(s)')
-    return <div>Loading...</div>;
-  if (!headlines.length) return <div>No headlines found</div>;
+  // Find the correct headline when component mounts or params change
+  useEffect(() => {
+    if (location.state?.article) {
+      // Article was passed via Link state (preferred)
+      setSelectedHeadline(location.state.article);
+      setLoading(false);
+    } else if (articleId && headlines.length > 0) {
+      // Fallback: Find article by decoded URL
+      const decodedUrl = decodeArticleId(articleId);
+      if (decodedUrl) {
+        const foundHeadline = headlines.find(article => 
+          article.url === decodedUrl
+        );
+        if (foundHeadline) {
+          setSelectedHeadline(foundHeadline);
+        } else {
+          setError('Article not found. It may have been removed or updated.');
+        }
+      }
+      setLoading(false);
+    }
+  }, [articleId, headlines, location.state]);
+
+  if (loading) return <div>Loading...</div>;
   
-  const selectedHeadline = headlines[Number(headlineIndex)];
-  if (!selectedHeadline) return <div>Invalid article</div>;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <div className="text-center p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button onClick={() => window.history.back()} className="bg-blue-600 text-white px-4 py-2 rounded">
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedHeadline) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+        <div className="text-center p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Article Not Found</h2>
+          <p className="text-gray-600 mb-4">The requested article could not be loaded.</p>
+          <button onClick={() => window.history.back()} className="bg-blue-600 text-white px-4 py-2 rounded">
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-amber-50 p-6 font-serif">
+    <div className="min-h-screen bg-blue-50 p-6 font-serif">
       <Chatbot 
-        headline={headlines[headlineIndex]} 
-        refreshHeadlines={fetchHeadlines} 
-        loading={loading}
-        error={error}
+        headline={selectedHeadline} 
+        onRefresh={fetchHeadlines} 
       />
     </div>
   );
 };
-
 
 export default Chat;
