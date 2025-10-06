@@ -136,10 +136,10 @@ const Home = () => {
         fetchHeadlines(category, selectedCountry);
     };
 
-    const handleCountryChange = (country) => {
-        setSelectedCountry(country);
-        fetchHeadlines(selectedCategory, country);
-    };
+    // const handleCountryChange = (country) => {
+    //     setSelectedCountry(country);
+    //     fetchHeadlines(selectedCategory, country);
+    // };
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
