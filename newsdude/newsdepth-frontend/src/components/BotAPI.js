@@ -60,7 +60,7 @@ class BotAPIService {
         headers: {
           "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.REACT_APP_OPENAI_KEY}`,
-            //'Upgrade': 'HTTP/2.0',
+            'Upgrade': 'HTTP/2.0',
             'API-Version': '1.0' // version in header
         },
         body: JSON.stringify({
